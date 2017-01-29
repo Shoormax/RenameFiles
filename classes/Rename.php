@@ -8,7 +8,7 @@
  */
 class Rename
 {
-    public static $extensions = array('mp3', 'm4a', 'wav');
+    public static $extensions = array('mp3', 'm4a', 'wav', 'mp4');
     public static $forbidenExtensions = array('php', 'txt', 'jpg', 'png', 'JPEG', 'jpeg', 'tiff', 'docx', 'html', 'db');
     public static $dossiersCaches = array('.', '..', '.idea', '. .php___jb_tmp___', 'SDA', 'classes');
     public static $chiffre = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
