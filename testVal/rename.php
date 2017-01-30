@@ -71,7 +71,8 @@ foreach($parents as $parent) {
             echo '<tr><td>Album</td><td>'.$album_recup.'</td></tr>';
             echo '<table>';
             echo '<hr>';
-
+            
+            //A sortir du grand foreach
             foreach ($dossierArtisteAlbum as $i => $key) {
                 $dossierACreer = Rename::replaceInvalidChar($i);
 
