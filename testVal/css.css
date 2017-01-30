@@ -1,0 +1,16 @@
+html, body {
+    font-family: "Segoe UI";
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+td {
+    border: 1px solid;
+    padding: 0.5em;
+}
+
+.array {
+    width:50%;
+    padding: 10px;
+}

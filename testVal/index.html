@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Insérer le chemin du dossier</title>
 </head>
 <body>
     <form action="rename.php" method="post">
-        <input type="text" name="chemin" value="D:/wamp/www/oalala/zic">
+        <input id="inputChemin" onkeyup="replaceSlashes(this)" type="text" name="chemin" placeholder="Chemin du dossier"><br>
         <input type="submit">
     </form>
 </body>
+<script src="jquery.min.js"></script>
+<script src="js.js"></script>
 </html>

@@ -187,4 +187,19 @@ var_dump($props);
     {
         return (ctype_alpha($char) || in_array($char, self::$chiffre));
     }
+
+    public static function replaceInvalidChar($str)
+    {
+        $str = str_replace('/', ' - ', $str);
+        $str = str_replace(':', '', $str);
+        $str = str_replace('\\', '', $str);
+        $str = str_replace('*', '', $str);
+        $str = str_replace('<', '', $str);
+        $str = str_replace('>', '', $str);
+        $str = str_replace('|', '', $str);
+        $str = str_replace('?', '', $str);
+        $str = str_replace('"', '', $str);
+
+        return $str;
+    }
 }
