@@ -14,6 +14,11 @@ $dossierArtisteAlbum = array();
 $musiques = array();
 $getID3 = new getID3;
 $separateur = 'separateur';
+$dest = 'E:/zicIpod';
+
+if(!file_exists($dest)) {
+    mkdir($dest, 0777, true);
+}
 
 if(isset($_POST['chemin']) && !empty($_POST['chemin']) && file_exists($_POST['chemin'])) {
     $parents = array($_POST['chemin']);
@@ -80,7 +85,7 @@ foreach($parents as $parent) {
             }
 
             $dossierArtisteAlbum[$artist_recup][$album_recup][] = str_replace($parent.'/', '',$titre).$separateur.$oldFullName;
-            //die('<pre>'.htmlentities(print_r($dossierArtisteAlbum, true), ENT_SUBSTITUTE).'</pre>'); //On shot
+//            die('<pre>'.htmlentities(print_r($dossierArtisteAlbum, true), ENT_SUBSTITUTE).'</pre>'); //On shot
 //            if(sizeof($dossierArtisteAlbum) > 50) {
 //                die('<pre>'.htmlentities(print_r($dossierArtisteAlbum, true), ENT_SUBSTITUTE).'</pre>');
 //                break 2;
@@ -102,14 +107,14 @@ foreach ($dossierArtisteAlbum as $i => $key) {
             $oldFullName = $temp[1];
             $dossierChildrenACreer = Rename::replaceInvalidChar($j);
 
-            if (!file_exists($dossierACreer . '/' . $dossierChildrenACreer)) {
-                mkdir($dossierACreer . '/' . $dossierChildrenACreer, 0777, true);
+            if (!file_exists($dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer)) {
+                mkdir($dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer, 0777, true);
             }
 
-            if (!copy($oldFullName, $dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre)) {
+            if (!copy($oldFullName, $dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre)) {
                 echo '<br>Failure !<br>';
                 var_dump($oldFullName);
-                var_dump($dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre);
+                var_dump($dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre);
             }
         }
     }
