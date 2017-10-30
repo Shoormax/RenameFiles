@@ -6,7 +6,10 @@
 </head>
 <body>
     <form action="rename.php" method="post">
+        <label for="inputChemin">Dossier d'origine : </label>
         <input id="inputChemin" onkeyup="replaceSlashes(this)" type="text" name="chemin" placeholder="Chemin du dossier"><br>
+        <label for="inputDes">Dossier de destination : </label>
+        <input id="inputDes" onkeyup="replaceSlashes(this)" type="text" name="dest" placeholder="Dossier de destination"><br>
         <label for="cbShowInfos">Afficher les informations relatives aux fichiers : </label>
         <input id="cbShowInfos" type="checkbox" name="showInfos"><br>
         <input type="submit">

@@ -9,15 +9,21 @@ echo $ajd->format('Y-m-d h:i:s').'<br>';
 require_once('../getid3/getid3.php');
 require_once('../classes/Rename.php');
 
-$extensions = array('.mp3', '.m4a', '.wav', '.mp4');
+$extensions = array('.mp3', '.m4a', '.wav', '.mp4', '.flac');
+$regexExtensions = str_replace('.', '\\.', '/'.implode('|', $extensions).'/');
+
 $dossierArtisteAlbum = array();
 $musiques = array();
-$getID3 = new getID3;
+$id3 = new getID3;
 $separateur = 'separateur';
-$dest = 'E:/zicIpod';
+$dest = isset($_POST['dest']) && !empty($_POST['dest']) ? $_POST['dest'] : '';
 
 if(!file_exists($dest)) {
     mkdir($dest, 0777, true);
+}
+
+if(!is_dir($dest)) {
+    die('Destination éronnée.');
 }
 
 if(isset($_POST['chemin']) && !empty($_POST['chemin']) && file_exists($_POST['chemin'])) {
@@ -39,16 +45,16 @@ for($i = 0; $i < 10; $i++) {
 
 foreach($parents as $parent) {
     foreach(Rename::getMusiques($parent) as $filename) {
-        $ThisFileInfo = $getID3->analyze($filename);
-        $tempName = explode('.',$ThisFileInfo['filename'])[0];
+        $thisFileInfo = $id3->analyze($filename);
+        $tempName = explode('.',$thisFileInfo['filename'])[0];
 
-        getid3_lib::CopyTagsToComments($ThisFileInfo);
+        getid3_lib::CopyTagsToComments($thisFileInfo);
 
-        if(!empty($ThisFileInfo['fileformat'])) {
-            $extension = '.'.$ThisFileInfo['fileformat'];
+        if(!empty($thisFileInfo['fileformat'])) {
+            $extension = '.'.$thisFileInfo['fileformat'];
         }
         else {
-            $temp = explode('.',$ThisFileInfo['filename']);
+            $temp = explode('.',$thisFileInfo['filename']);
             $extension = '.'.array_pop($temp);
             if(!in_array($extension, $extensions)) {
                 echo '<br>extensionwtf : '.$extension.'<br>';
@@ -56,24 +62,18 @@ foreach($parents as $parent) {
         }
 
         if(in_array($extension, $extensions)) {
-            $oldFullName = $ThisFileInfo['filenamepath'];
-            $titre_recup = empty($ThisFileInfo['comments']['title']) ? 'NoTitle'.$tempName : $ThisFileInfo['comments']['title'][0];
+            $oldFullName = $thisFileInfo['filenamepath'];
+            $titre_recup = empty($thisFileInfo['comments']['title']) ? 'NoTitle'.$tempName : $thisFileInfo['comments']['title'][0];
 
             $titre_recup = Rename::replaceInvalidChar($titre_recup);
             $titre = $parent.'/'.$titre_recup;
-            $titre_duplicate = '';
 
-            $i = 1;
-            while(file_exists($titre.$titre_duplicate) || file_exists($titre.$titre_duplicate.$extension)) {
-                $titre_duplicate = ' ('.$i.')';
-                $i++;
-            }
-            $titre = $titre.$titre_duplicate.$extension;
+            $titre = $titre.$extension;
 
-            $album_recup = empty($ThisFileInfo['comments']['album']) ? 'NoAlbum' : $ThisFileInfo['comments']['album'][0];
-            $artist_recup = empty($ThisFileInfo['comments']['artist']) ? 'NoArtist' : $ThisFileInfo['comments']['artist'][0];
+            $album_recup = empty($thisFileInfo['comments']['album']) ? 'NoAlbum' : $thisFileInfo['comments']['album'][0];
+            $artist_recup = empty($thisFileInfo['comments']['artist']) ? 'NoArtist' : $thisFileInfo['comments']['artist'][0];
 
-            if(isset($_POST['showInfos']) && !empty($_POST['showInfos']) && $_POST['showInfos']) {
+            if(isset($_POST['showInfos']) && !empty($_POST['showInfos'])) {
                 echo '<table class="array">';
                 echo '<tr><td>Titre duplicate</td><td>'.$titre.'</td></tr>';
                 echo '<tr><td>Titre</td><td>'.$titre_recup.'</td></tr>';
@@ -85,12 +85,6 @@ foreach($parents as $parent) {
             }
 
             $dossierArtisteAlbum[$artist_recup][$album_recup][] = str_replace($parent.'/', '',$titre).$separateur.$oldFullName;
-//            die('<pre>'.htmlentities(print_r($dossierArtisteAlbum, true), ENT_SUBSTITUTE).'</pre>'); //On shot
-//            if(sizeof($dossierArtisteAlbum) > 50) {
-//                die('<pre>'.htmlentities(print_r($dossierArtisteAlbum, true), ENT_SUBSTITUTE).'</pre>');
-//                break 2;
-//            }
-//            break;
         }
         else {
             echo 'CAY UN DOSSIER : <pre>'.$filename.$extension.'</pre>';
@@ -111,14 +105,28 @@ foreach ($dossierArtisteAlbum as $i => $key) {
                 mkdir($dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer, 0777, true);
             }
 
-            if (!copy($oldFullName, $dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre)) {
+            $extension = '';
+
+            preg_match_all($regexExtensions, $titre, $matches);
+            $titre = preg_replace($regexExtensions,'', $titre);
+
+            $i = 1;
+            $titreDuplicate = '';
+
+            while(file_exists($dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre.$titreDuplicate.$matches[0][0])) {
+                $titreDuplicate = ' ('.$i.')';
+                $i++;
+            }
+
+            $fullFile = $dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre.$titreDuplicate.$matches[0][0];
+
+            if (!copy($oldFullName, $fullFile)) {
                 echo '<br>Failure !<br>';
                 var_dump($oldFullName);
-                var_dump($dest.'/'.$dossierACreer . '/' . $dossierChildrenACreer . '/' . $titre);
+                var_dump($fullFile);
             }
         }
     }
 }
 $ajd =  new DateTime('now');
 echo $ajd->format('Y-m-d h:i:s').'<br>';
-//die('<pre>'.htmlentities(print_r($dossierArtisteAlbum, true), ENT_SUBSTITUTE).'</pre>');

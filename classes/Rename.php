@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: Valentin
- * Date: 28/01/2017
- * Time: 02:49
- */
 class Rename
 {
     public static $extensions = array('mp3', 'm4a', 'wav', 'mp4');
@@ -52,8 +46,6 @@ class Rename
             }
 
             $title = $number . ' ' . $tempTitle;
-
-            $title_end = preg_replace("/ /", "\ ", $title);
 
             rename($file, $chemin . $title . '.' . $extension);
         }
@@ -167,10 +159,7 @@ class Rename
             foreach (explode($tempnum2[0], $tempnum2) as $property) {
 
                 if (!empty($property) && self::isValidChar($property[0])) {
-                    //if($i < 19) {
                     $properties[] = $property;
-//                        $i ++;
-//                    }
 
                 }
             }
@@ -218,9 +207,9 @@ class Rename
         $str = str_replace('ü', 'u', $str);
         $str = str_replace('ù', 'u', $str);
         $str = str_replace('&amp;', '&', $str);
-
+        $str = trim($str);
 
         return $str;
-
     }
+
 }
