@@ -149,13 +149,10 @@ class Rename
     public static function getRealTitle($file)
     {
         $props = file_get_contents($file);
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        var_dump($props);
         $tempnum2 = explode('TIT2', $props)[1];
-        var_dump($tempnum2);
         if ($tempnum2 != 'error') {
             $properties = array();
-            $i = 0;
+
             foreach (explode($tempnum2[0], $tempnum2) as $property) {
 
                 if (!empty($property) && self::isValidChar($property[0])) {
@@ -163,13 +160,7 @@ class Rename
 
                 }
             }
-            //0 : nom
-            //6 : Album
-            //8 : numero
-            //12 : Artist
-            //18 : date
 
-            var_dump($properties);
         }
     }
 
@@ -207,9 +198,8 @@ class Rename
         $str = str_replace('ü', 'u', $str);
         $str = str_replace('ù', 'u', $str);
         $str = str_replace('&amp;', '&', $str);
-        $str = trim($str);
 
-        return $str;
+        return trim($str);
     }
 
 }
