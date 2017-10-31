@@ -19,13 +19,13 @@ $separateur = 'separateur';
 $dest = isset($_POST['dest']) && !empty($_POST['dest']) ? $_POST['dest'] : '';
 $increment = 1;
 
-if(!file_exists($dest)) {
-    mkdir($dest, 0777, true);
-}
-
-if(!is_dir($dest)) {
-    die('Destination éronnée.');
-}
+//if(!file_exists($dest)) {
+//    mkdir($dest, 0777, true);
+//}
+//
+//if(!is_dir($dest)) {
+//    die('Destination éronnée.');
+//}
 
 if(isset($_POST['chemin']) && !empty($_POST['chemin']) && file_exists($_POST['chemin'])) {
     $parents = array($_POST['chemin']);
@@ -33,6 +33,9 @@ if(isset($_POST['chemin']) && !empty($_POST['chemin']) && file_exists($_POST['ch
 else {
     die('Chemin non valide.');
 }
+
+Rename::getParentsRecursive($_POST['chemin']);
+echo '<pre>'.print_r(Rename::$files).'</pre>';die;
 
 for($i = 0; $i < 10; $i++) {
     foreach ($parents as $parent) {

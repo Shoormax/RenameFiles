@@ -4,9 +4,10 @@ class Rename
 {
     public static $extensions = array('mp3', 'm4a', 'wav', 'mp4', 'flac', 'wma', 'm3u');
     public static $forbidenExtensions = array('php', 'txt', 'jpg', 'png', 'JPEG', 'jpeg', 'tiff', 'docx', 'html', 'db', 'nfo', 'rar', 'ini');
-    public static $dossiersCaches = array('.', '..', '.idea', '. .php___jb_tmp___', 'SDA', 'classes');
+    public static $dossiersCaches = array('.', '..', '.idea', '. .php___jb_tmp___', 'SDA', 'classes', '.git');
     public static $dossiersDejaOk = array('Compil Hans Zimmer', 'BO SMB');
     public static $chiffre = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+    public static $files = array();
 
     /**
      * Permet de renommer les noms des fichiers passés en paramètres
@@ -212,6 +213,42 @@ class Rename
         $str = str_replace('&amp;', '&', $str);
 
         return trim($str);
+    }
+
+    public static function getParentsRecursive($dir, &$results = array()){
+        $files = scandir($dir);
+
+        foreach($files as $key => $value){
+            $path = realpath($dir.DIRECTORY_SEPARATOR.$value);
+            if(!is_dir($path)) {
+                $results['files'][] = $path;
+            }
+            else if(!in_array($value, array_merge(self::$dossiersCaches, self::$dossiersDejaOk))) {
+                self::getParentsRecursive($path, $results);
+                $results['dir'][] = $path;
+            }
+        }
+
+        self::$files = $results;
+    }
+
+    public static function temp($chemin)
+    {
+
+//        $condition = false;
+//
+//        foreach ($args as $key => &$value) {
+//            $condition = false;
+//            if (is_array($value) && isset($array[$key]) && is_array($array[$key])) {
+//                $condition = true;
+//                self::getParentsRecursive($array[$key], $value);
+//            }
+//        }
+//
+//        if(!$condition) {
+//            $array = array_merge($array, $args);
+//        }
+
     }
 
 }
