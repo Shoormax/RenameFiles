@@ -2,9 +2,10 @@
 
 class Rename
 {
-    public static $extensions = array('mp3', 'm4a', 'wav', 'mp4');
-    public static $forbidenExtensions = array('php', 'txt', 'jpg', 'png', 'JPEG', 'jpeg', 'tiff', 'docx', 'html', 'db');
+    public static $extensions = array('mp3', 'm4a', 'wav', 'mp4', 'flac', 'wma', 'm3u');
+    public static $forbidenExtensions = array('php', 'txt', 'jpg', 'png', 'JPEG', 'jpeg', 'tiff', 'docx', 'html', 'db', 'nfo', 'rar', 'ini');
     public static $dossiersCaches = array('.', '..', '.idea', '. .php___jb_tmp___', 'SDA', 'classes');
+    public static $dossiersDejaOk = array('Compil Hans Zimmer', 'BO SMB');
     public static $chiffre = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
     /**
@@ -86,12 +87,12 @@ class Rename
         $dossiers = array();
 
         if ($parent != '') {
-            $parent = $parent . '/';
+            $parent .= '/';
         }
 
         foreach ($files as $file) {
             $t = (explode('.', $file));
-            if (!in_array($file, self::$dossiersCaches)) {
+            if (!in_array($file, array_merge(self::$dossiersCaches, self::$dossiersDejaOk))) {
                 if (in_array(array_pop($t), self::$extensions)) {
                     $musiques[] = $parent . $file;
                 } else {
@@ -112,19 +113,25 @@ class Rename
     {
         $dossiers = array();
         if ($parent != './') {
-            $parent = $parent . '/';
+            $parent .= '/';
         }
-        foreach (scandir($parent) as $fichier) {
-            if (strlen($fichier) > 2) {
-                if ($fichier[0] . $fichier[1] != '._' &&
-                    !in_array($fichier, self::$dossiersCaches) &&
-                    !in_array(pathinfo($fichier, PATHINFO_EXTENSION), self::$extensions) &&
-                    !in_array(pathinfo($fichier, PATHINFO_EXTENSION), self::$forbidenExtensions)
-                ) {
-                    $dossiers[] = $parent . $fichier;
+        if(is_dir($parent)) {
+            foreach (scandir($parent) as $fichier) {
+                if (strlen($fichier) > 2) {
+                    if ($fichier[0] . $fichier[1] != '._' &&
+                        !in_array($fichier, array_merge(self::$dossiersCaches, self::$dossiersDejaOk)) &&
+                        !in_array(pathinfo($fichier, PATHINFO_EXTENSION), self::$extensions) &&
+                        !in_array(pathinfo($fichier, PATHINFO_EXTENSION), self::$forbidenExtensions)
+                    ) {
+                        $dossiers[] = $parent . $fichier;
+                    }
                 }
             }
         }
+        else {
+            var_dump($parent);
+        }
+
         return $dossiers;
     }
 
@@ -132,10 +139,11 @@ class Rename
     {
         $musiques = array();
         if ($parent != './') {
-            $parent = $parent . '/';
+            $parent .= '/';
         }
+
         foreach (scandir($parent) as $fichier) {
-            if (!in_array($fichier, self::$dossiersCaches) &&
+            if (!in_array($fichier, array_merge(self::$dossiersCaches, self::$dossiersDejaOk)) &&
                 in_array(pathinfo($fichier, PATHINFO_EXTENSION), self::$extensions) &&
                 !in_array(pathinfo($fichier, PATHINFO_EXTENSION), self::$forbidenExtensions)
             ) {
@@ -197,6 +205,10 @@ class Rename
         $str = str_replace('û', 'u', $str);
         $str = str_replace('ü', 'u', $str);
         $str = str_replace('ù', 'u', $str);
+        $str = str_replace('å', 'a', $str);
+        $str = str_replace('├®', 'é', $str);
+        $str = str_replace('ÔÇÖ', '\'', $str);
+        $str = str_replace('├┤', 'ô', $str);
         $str = str_replace('&amp;', '&', $str);
 
         return trim($str);
